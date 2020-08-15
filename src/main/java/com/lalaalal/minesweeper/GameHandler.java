@@ -1,5 +1,6 @@
 package com.lalaalal.minesweeper;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class GameHandler {
@@ -50,23 +51,22 @@ public class GameHandler {
 
     public void makePlayableBoard() {
         try {
-            System.out.print("Command : ");
-            String command = scanner.next();
-            ConsoleCommand consoleCommand = makeCommand(command);
-
-            while (!(consoleCommand instanceof OpenCommand)) {
-                consoleCommand.run();
-                System.out.print("Command : ");
-                command = scanner.next();
-                consoleCommand = makeCommand(command);
-            }
-
+            System.out.print("Select First Point : ");
             Point point = Point.scanPoint(scanner);
+
             board.initBoard(point);
             openTile(point);
+        } catch (InputMismatchException e) {
+            System.out.println("Wrong Input\n");
+            scanner.nextLine();
+            makePlayableBoard();
+        }
+        catch (IndexOutOfBoundsException e) {
+            System.out.println(e.getMessage() + "\n");
+            makePlayableBoard();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println();
+            System.out.println(e.getMessage() + "\n");
+            scanner.nextLine();
             makePlayableBoard();
         }
     }
@@ -90,11 +90,16 @@ public class GameHandler {
 
             ConsoleCommand consoleCommand = makeCommand(command);
             return consoleCommand.run();
+        } catch (InputMismatchException e) {
+            scanner.nextLine();
+            System.out.println("Wrong Input\n");
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(e.getMessage() + "\n");
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println();
-            return GameStatus.GAME_PLAYING;
+            scanner.nextLine();
+            System.out.println(e.getMessage() + "\n");
         }
+        return GameStatus.GAME_PLAYING;
     }
 
     public void openTile(Point point) {
@@ -158,6 +163,7 @@ public class GameHandler {
         }
         System.out.println("Total Bomb Count : " + board.BOMB_COUNT);
         System.out.println("Flag Count       : " + flagCount);
+        System.out.println();
     }
 
     public ConsoleCommand makeCommand(String command) throws Exception {
@@ -166,7 +172,7 @@ public class GameHandler {
             case "FLAG", "flag", "Flag" -> new FlagCommand();
             case "HELP", "help", "Help" -> new HelpCommand();
             case "EXIT", "exit", "Exit" -> new ExitCommand();
-            default -> throw new Exception("Unknown Command");
+            default -> throw new Exception(String.format("Unknown Command (%s)", command));
         };
     }
 
@@ -197,7 +203,7 @@ public class GameHandler {
     private static class HelpCommand implements ConsoleCommand {
         @Override
         public GameStatus run() {
-            System.out.println("COMMAND (OPEN, FLAG, HELP) [x] [y]\n");
+            System.out.println("COMMAND (OPEN, FLAG, EXIT) [x] [y]\n");
             return GameStatus.GAME_PLAYING;
         }
     }

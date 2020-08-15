@@ -162,6 +162,8 @@ public class Board {
     }
 
     public void initBoard(Point openPoint) {
+        if (!isPointInRange(openPoint))
+            throw new IndexOutOfBoundsException("Point " + openPoint + " out of bounds");
         board = new byte[COL_LENGTH][ROW_LENGTH];
 
         Point[] bombPoints;

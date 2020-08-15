@@ -16,6 +16,7 @@ public class Point {
     public static Point scanPoint(Scanner scanner) {
         int x = scanner.nextInt();
         int y = scanner.nextInt();
+        scanner.nextLine();
 
         return new Point(x, y);
     }
@@ -52,5 +53,10 @@ public class Point {
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(%d, %d)", x, y);
     }
 }
