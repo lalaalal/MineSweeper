@@ -3,30 +3,31 @@ package com.lalaalal.minesweeper;
 import java.util.Scanner;
 
 public class GameHandler {
-    enum GameStatus {
+    private enum GameStatus {
         GAME_OVER,
         GAME_PLAYING,
         GAME_WIN,
         GAME_EXIT
     }
 
-    final String os = System.getProperty("os.name");
+    private final String os = System.getProperty("os.name");
     private final Scanner scanner = new Scanner(System.in);
 
     private final Board board;
+    private int flagCount = 0;
 
-    public GameHandler() {
-        System.out.print("Row Length      : ");
+    public GameHandler() throws Exception {
+        System.out.print("Row Length    ( 3 ~ 50 )   : ");
         int rowLength = scanner.nextInt();
-        System.out.print("Column Length   : ");
+        System.out.print("Column Length ( 3 ~ 50 )   : ");
         int columnLength = scanner.nextInt();
-        System.out.print("Bomb Count      : ");
+        System.out.printf("Bomb Count    ( 1 ~ %04d ) : ", rowLength * columnLength - 1);
         int bombCount = scanner.nextInt();
 
         board = new Board(rowLength, columnLength, bombCount);
     }
 
-    public GameHandler(int rowLength, int columnLength, int bombCount) {
+    public GameHandler(int rowLength, int columnLength, int bombCount) throws Exception {
         board = new Board(rowLength, columnLength, bombCount);
     }
 
@@ -65,6 +66,7 @@ public class GameHandler {
             openTile(point);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            System.out.println();
             makePlayableBoard();
         }
     }
@@ -90,6 +92,7 @@ public class GameHandler {
             return consoleCommand.run();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            System.out.println();
             return GameStatus.GAME_PLAYING;
         }
     }
@@ -117,6 +120,8 @@ public class GameHandler {
     public void flagTile(Point point) { flagTile(point.x, point.y); }
 
     public void flagTile(int x, int y) {
+        if (board.isTileFlagged(x, y)) flagCount--;
+        else flagCount++;
         board.toggleTileFlag(x, y);
     }
 
@@ -151,6 +156,8 @@ public class GameHandler {
                 System.out.print("====");
             System.out.println("=");
         }
+        System.out.println("Total Bomb Count : " + board.BOMB_COUNT);
+        System.out.println("Flag Count       : " + flagCount);
     }
 
     public ConsoleCommand makeCommand(String command) throws Exception {

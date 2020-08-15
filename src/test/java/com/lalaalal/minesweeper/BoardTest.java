@@ -10,7 +10,7 @@ public class BoardTest {
             { 0x01, 0x01, 0x00 }
     };
 
-    @Test public void testCheckingPlayableBoard() {
+    @Test public void testCheckingPlayableBoard() throws Exception {
         Board board = new Board(testBoardData, 1);
         Point[] bombPoints = { new Point(0, 1) };
         assertFalse(board.isPlayableBoard(bombPoints, new Point(1, 1)));

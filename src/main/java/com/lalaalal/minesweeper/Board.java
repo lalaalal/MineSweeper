@@ -19,13 +19,18 @@ public class Board {
     private byte[][] board;
     private int answer = 0;
 
-    public Board(int rowLength, int columnLength, int bombCount) {
+    public Board(int rowLength, int columnLength, int bombCount) throws Exception {
+        if (rowLength < 3 || columnLength < 3 || 50 < rowLength || 50 < columnLength
+                || bombCount < 1 || bombCount >= rowLength * columnLength)
+            throw new Exception("Wrong Parameter");
         ROW_LENGTH = rowLength;
         COL_LENGTH = columnLength;
         BOMB_COUNT = bombCount;
     }
 
-    public Board(byte[][] board, int bombCount) {
+    public Board(byte[][] board, int bombCount) throws Exception {
+        if (bombCount < 1)
+            throw new Exception("Wrong Parameter");
         this.board = board;
         COL_LENGTH = board.length;
         ROW_LENGTH = board[0].length;
@@ -148,7 +153,8 @@ public class Board {
         for (Point bombPoint : bombPoints) {
             if (bombPoint.equals(openPoint))
                 return false;
-            runSurroundAction(bombPoint, (point) -> result.set(result.get() | point.equals(openPoint)));
+            if (BOMB_COUNT * 2 < ROW_LENGTH * COL_LENGTH)
+                runSurroundAction(bombPoint, (point) -> result.set(result.get() | point.equals(openPoint)));
             if (result.get())
                 return false;
         }
