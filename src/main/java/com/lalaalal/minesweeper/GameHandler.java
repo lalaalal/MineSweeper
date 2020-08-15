@@ -1,5 +1,6 @@
 package com.lalaalal.minesweeper;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class GameHandler {
@@ -10,6 +11,7 @@ public class GameHandler {
         GAME_EXIT
     }
 
+    final String os = System.getProperty("os.name");
     private final Scanner scanner = new Scanner(System.in);
 
     private final Board board;
@@ -35,9 +37,17 @@ public class GameHandler {
         this.board = board;
     }
 
-    public static void clearConsole() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+    public void clearConsole() {
+        try {
+            if (os.contains("Windows"))
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void consolePlay() {

@@ -1,1 +1,3 @@
-#MineSweeper
+# MineSweeper
+
+MineSweeper in Console
