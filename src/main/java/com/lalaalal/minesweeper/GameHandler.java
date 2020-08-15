@@ -1,6 +1,5 @@
 package com.lalaalal.minesweeper;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class GameHandler {
@@ -25,12 +24,10 @@ public class GameHandler {
         int bombCount = scanner.nextInt();
 
         board = new Board(rowLength, columnLength, bombCount);
-        board.initBoard();
     }
 
     public GameHandler(int rowLength, int columnLength, int bombCount) {
         board = new Board(rowLength, columnLength, bombCount);
-        board.initBoard();
     }
 
     public GameHandler(Board board) {
@@ -50,12 +47,34 @@ public class GameHandler {
         }
     }
 
-    public void consolePlay() {
-        GameStatus gameStatus = GameStatus.GAME_PLAYING;
-        displayBoard();
-        while (gameStatus == GameStatus.GAME_PLAYING) {
-            gameStatus = runConsoleCommand();
+    public void makePlayableBoard() {
+        try {
+            System.out.print("Command : ");
+            String command = scanner.next();
+            ConsoleCommand consoleCommand = makeCommand(command);
+
+            while (!(consoleCommand instanceof OpenCommand)) {
+                consoleCommand.run();
+                System.out.print("Command : ");
+                command = scanner.next();
+                consoleCommand = makeCommand(command);
+            }
+
+            Point point = Point.scanPoint(scanner);
+            board.initBoard(point);
+            openTile(point);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            makePlayableBoard();
         }
+    }
+
+    public void consolePlay() {
+        makePlayableBoard();
+        displayBoard();
+        GameStatus gameStatus = GameStatus.GAME_PLAYING;
+        while (gameStatus == GameStatus.GAME_PLAYING)
+            gameStatus = runConsoleCommand();
         switch (gameStatus) {
             case GAME_WIN -> System.out.println("You Win!");
             case GAME_OVER -> System.out.println("Game Over!");
@@ -69,10 +88,14 @@ public class GameHandler {
 
             ConsoleCommand consoleCommand = makeCommand(command);
             return consoleCommand.run();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
+            return GameStatus.GAME_PLAYING;
         }
-        return GameStatus.GAME_PLAYING;
+    }
+
+    public void openTile(Point point) {
+        openTile(point.x, point.y);
     }
 
     public void openTile(int x, int y) {
@@ -84,11 +107,28 @@ public class GameHandler {
         }
     }
 
+    public GameStatus getOpenStatus(Point point) {
+        if (board.isBomb(point))
+            return GameStatus.GAME_OVER;
+        else
+            return GameStatus.GAME_PLAYING;
+    }
+
+    public void flagTile(Point point) { flagTile(point.x, point.y); }
+
     public void flagTile(int x, int y) {
         board.toggleTileFlag(x, y);
     }
 
+    public GameStatus getFlagStatus() {
+        if (board.getAnswer() == board.BOMB_COUNT)
+            return GameStatus.GAME_WIN;
+        else
+            return GameStatus.GAME_PLAYING;
+    }
+
     public void displayBoard() {
+        clearConsole();
         System.out.print("   ");
         for (int i = 0; i < board.ROW_LENGTH; i++)
             System.out.printf("  %02d", i);
@@ -130,32 +170,20 @@ public class GameHandler {
     private class OpenCommand implements ConsoleCommand {
         @Override
         public GameStatus run() {
-            int x = scanner.nextInt();
-            int y = scanner.nextInt();
-
-            openTile(x, y);
-            clearConsole();
+            Point point = Point.scanPoint(scanner);
+            openTile(point);
             displayBoard();
-            if (board.isBomb(x, y))
-                return GameStatus.GAME_OVER;
-            else
-                return GameStatus.GAME_PLAYING;
+            return getOpenStatus(point);
         }
     }
 
     private class FlagCommand implements ConsoleCommand {
         @Override
         public GameStatus run() {
-            int x = scanner.nextInt();
-            int y = scanner.nextInt();
-
-            flagTile(x, y);
-            clearConsole();
+            Point point = Point.scanPoint(scanner);
+            flagTile(point);
             displayBoard();
-            if (board.getAnswer() == board.BOMB_COUNT)
-                return GameStatus.GAME_WIN;
-            else
-                return GameStatus.GAME_PLAYING;
+            return getFlagStatus();
         }
     }
 

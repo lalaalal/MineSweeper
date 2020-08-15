@@ -2,6 +2,7 @@ package com.lalaalal.minesweeper;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Point {
     public int x;
@@ -10,6 +11,13 @@ public class Point {
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public static Point scanPoint(Scanner scanner) {
+        int x = scanner.nextInt();
+        int y = scanner.nextInt();
+
+        return new Point(x, y);
     }
 
     public static Point[] sample(int size, int xBound, int yBound) {

@@ -1,30 +1,35 @@
 package com.lalaalal.minesweeper;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class Board {
     public final int ROW_LENGTH;
     public final int COL_LENGTH;
     public final int BOMB_COUNT;
-    public final byte BOMB_VALUE = 0x0B;
 
+    protected final byte BOMB_VALUE = 0x0B;
     protected final byte FLAG_VALUE = 0x10;
     protected final byte OPEN_VALUE = 0x20;
     protected final byte VALUE_MASK = 0x0F;
-    protected final byte FLAGS_MASK = FLAG_VALUE + OPEN_VALUE;
 
     /*
     0x0_ : value (bombCount or bomb)
-    0x_0 : open flag (1 or 0)
+    0x_0 : open, flag (0 ~ 2)
      */
-    private final byte[][] board;
-    private int answer;
+    private byte[][] board;
+    private int answer = 0;
 
     public Board(int rowLength, int columnLength, int bombCount) {
         ROW_LENGTH = rowLength;
         COL_LENGTH = columnLength;
         BOMB_COUNT = bombCount;
-        answer = 0;
+    }
 
-        board = new byte[COL_LENGTH][ROW_LENGTH];
+    public Board(byte[][] board, int bombCount) {
+        this.board = board;
+        COL_LENGTH = board.length;
+        ROW_LENGTH = board[0].length;
+        BOMB_COUNT = bombCount;
     }
 
     public void setBomb(Point point) {
@@ -121,9 +126,7 @@ public class Board {
         return answer;
     }
 
-    public void initBoard() {
-        Point[] bombPoints = Point.sample(BOMB_COUNT, ROW_LENGTH, COL_LENGTH);
-
+    public void makeBoardWithBombPoints(Point[] bombPoints) {
         for (Point bombPoint : bombPoints) {
             setBomb(bombPoint);
             runSurroundAction(bombPoint, (point) -> {
@@ -131,6 +134,35 @@ public class Board {
                     addTileValue(point);
             });
         }
+    }
+
+    public void initBoard() {
+        board = new byte[COL_LENGTH][ROW_LENGTH];
+        Point[] bombPoints = Point.sample(BOMB_COUNT, ROW_LENGTH, COL_LENGTH);
+
+        makeBoardWithBombPoints(bombPoints);
+    }
+
+    public boolean isPlayableBoard(Point[] bombPoints, Point openPoint) {
+        AtomicBoolean result = new AtomicBoolean();
+        for (Point bombPoint : bombPoints) {
+            if (bombPoint.equals(openPoint))
+                return false;
+            runSurroundAction(bombPoint, (point) -> result.set(result.get() | point.equals(openPoint)));
+            if (result.get())
+                return false;
+        }
+        return true;
+    }
+
+    public void initBoard(Point openPoint) {
+        board = new byte[COL_LENGTH][ROW_LENGTH];
+
+        Point[] bombPoints;
+        do {
+            bombPoints = Point.sample(BOMB_COUNT, ROW_LENGTH, COL_LENGTH);
+        } while (!isPlayableBoard(bombPoints, openPoint));
+        makeBoardWithBombPoints(bombPoints);
     }
 
     public boolean isPointInRange(Point point) {
