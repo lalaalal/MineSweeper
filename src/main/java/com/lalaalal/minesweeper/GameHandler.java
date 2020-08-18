@@ -1,5 +1,6 @@
 package com.lalaalal.minesweeper;
 
+import com.lalaalal.minesweeper.command.CommandManager;
 import com.lalaalal.minesweeper.state.GameOverState;
 import com.lalaalal.minesweeper.state.GameState;
 import com.lalaalal.minesweeper.state.PlayingState;
@@ -8,6 +9,7 @@ import com.lalaalal.minesweeper.state.WinState;
 public abstract class GameHandler {
     protected final Board board;
     protected int flagCount = 0;
+    protected CommandManager commandManager = new CommandManager();
 
     public GameHandler(Board board) {
         this.board = board;
@@ -44,12 +46,12 @@ public abstract class GameHandler {
     public void play() {
         GameState state = ready();
         while (state instanceof PlayingState)
-            state = runCommand();
+            state = runCommand(state);
 
         finale(state);
     }
 
-    public abstract GameState runCommand();
+    public abstract GameState runCommand(GameState prevState);
 
     public abstract Point getSelectedPoint();
 
@@ -65,5 +67,9 @@ public abstract class GameHandler {
         if (board.BOMB_COUNT == board.getAnswer())
             return new WinState();
         return new PlayingState(point);
+    }
+
+    public GameState undo() throws Exception {
+        return commandManager.undo();
     }
 }

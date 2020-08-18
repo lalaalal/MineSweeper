@@ -1,9 +1,9 @@
 package com.lalaalal.minesweeper.console;
 
 import com.lalaalal.minesweeper.Board;
-import com.lalaalal.minesweeper.command.*;
 import com.lalaalal.minesweeper.GameHandler;
 import com.lalaalal.minesweeper.Point;
+import com.lalaalal.minesweeper.command.GameCommand;
 import com.lalaalal.minesweeper.state.GameState;
 import com.lalaalal.minesweeper.state.PlayingState;
 
@@ -12,6 +12,7 @@ import java.util.Scanner;
 public class ConsoleGameHandler extends GameHandler {
     private static final Scanner scanner = new Scanner(System.in);
     private static final ConsoleCleaner consoleCleaner = ConsoleCleaner.getConsoleCleaner();
+    private final ConsoleCommandFactory commandFactory = new ConsoleCommandFactory(this);
 
     public ConsoleGameHandler() throws Exception{
         super(createBoard());
@@ -32,19 +33,20 @@ public class ConsoleGameHandler extends GameHandler {
         System.out.print("Command : ");
         String command = scanner.next();
 
-        CommandFactory commandFactory = new ConsoleCommandFactory(command);
-        return commandFactory.createCommand();
+        return commandFactory.createCommand(command);
     }
 
 
     @Override
-    public GameState runCommand() {
+    public GameState runCommand(GameState prevState) {
         try {
-            return getCommand().run(this);
+            System.out.println("Prev : " + prevState.getMessage());
+            GameCommand command = getCommand();
+            return commandManager.execute(command);
         } catch (Exception e) {
             scanner.nextLine();
-            System.out.println(e.getMessage());
-            return runCommand();
+            System.out.println(e.getMessage() + "\n");
+            return runCommand(prevState);
         }
     }
 
@@ -67,7 +69,7 @@ public class ConsoleGameHandler extends GameHandler {
 
     @Override
     public void finale(GameState state) {
-        System.out.println(state.getMessage());
+        System.out.println("\n" + state.getMessage());
     }
 
     public void displayBoard() {
@@ -99,41 +101,5 @@ public class ConsoleGameHandler extends GameHandler {
         System.out.println();
     }
 
-    public class ConsoleCommandFactory implements CommandFactory {
-        private final String command;
-
-        public ConsoleCommandFactory(String command) {
-            this.command = command;
-        }
-
-        @Override
-        public GameCommand createCommand() {
-            return switch (command) {
-                case "OPEN", "open", "o" -> new ConsoleOpenCommand();
-                case "FLAG", "flag", "f" -> new ConsoleFlagCommand();
-                case "EXIT", "exit" -> new ExitCommand();
-                default -> throw new IllegalStateException("Unexpected command: " + command);
-            };
-        }
-    }
-
-    public class ConsoleOpenCommand extends OpenCommand {
-        @Override
-        public GameState run(GameHandler game) {
-            GameState state = super.run(game);
-            displayBoard();
-
-            return state;
-        }
-    }
-
-    public class ConsoleFlagCommand extends FlagCommand {
-        @Override
-        public GameState run(GameHandler game) {
-            GameState state = super.run(game);
-            displayBoard();
-
-            return state;
-        }
-    }
 }
+

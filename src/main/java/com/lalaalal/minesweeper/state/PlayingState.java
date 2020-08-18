@@ -3,17 +3,23 @@ package com.lalaalal.minesweeper.state;
 import com.lalaalal.minesweeper.Point;
 
 public class PlayingState implements GameState {
-    private final Point point;
+    private final String message;
 
     public PlayingState(Point point) {
-        this.point = point;
-    }
-    @Override
-    public String getMessage() {
-        return "Playing";
+        message = point + " Changed";
     }
 
-    public Point getPoint() {
-        return point;
+    public PlayingState() {
+        this("Playing");
+    }
+
+    public PlayingState(String message) {
+        this.message = message;
+    }
+
+
+    @Override
+    public String getMessage() {
+        return message;
     }
 }

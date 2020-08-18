@@ -127,6 +127,14 @@ public class Board {
         board[y][x] |= OPEN_VALUE;
     }
 
+    public void toggleTileOpen(Point point) {
+        toggleTileOpen(point.x, point.y);
+    }
+
+    public void toggleTileOpen(int x, int y) {
+        board[y][x] ^= OPEN_VALUE;
+    }
+
     public int getAnswer() {
         return answer;
     }
