@@ -67,4 +67,8 @@ public abstract class GameHandler {
     public GameState undo() throws Exception {
         return commandManager.undo();
     }
+
+    public GameState redo() throws Exception {
+        return commandManager.redo();
+    }
 }

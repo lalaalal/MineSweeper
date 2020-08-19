@@ -26,9 +26,14 @@ public class FlagCommand extends UndoableCommand {
     }
 
     @Override
-    public GameState undo() throws Exception {
+    public GameState undo() {
         game.flagTile(point);
 
         return new PlayingState(point);
+    }
+
+    @Override
+    public GameState redo() {
+        return undo();
     }
 }
