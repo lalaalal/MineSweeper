@@ -15,11 +15,6 @@ public abstract class GameHandler {
         this.board = board;
     }
 
-    public void openFirstTile(Point point) {
-        board.initBoard(point);
-        openTile(point);
-    }
-
     public void openTile(Point point) {
         openTile(point.x, point.y);
     }

@@ -10,7 +10,7 @@ public class ConsoleFlagCommand extends FlagCommand {
     }
 
     @Override
-    public GameState run() {
+    public GameState run() throws Exception {
         GameState state = super.run();
         ((ConsoleGameHandler) game).displayBoard();
 

@@ -25,6 +25,7 @@ public class ConsoleGameHandler extends GameHandler {
         int columnLength = scanner.nextInt();
         System.out.printf("Bomb Count    ( 1 ~ %04d ) : ", rowLength * columnLength - 1);
         int bombCount = scanner.nextInt();
+        System.out.println();
 
         return new Board(rowLength, columnLength, bombCount);
     }
@@ -44,9 +45,10 @@ public class ConsoleGameHandler extends GameHandler {
             GameCommand command = getCommand();
             return commandManager.execute(command);
         } catch (Exception e) {
-            scanner.nextLine();
+            if (!(e instanceof IndexOutOfBoundsException))
+                scanner.nextLine();
             System.out.println(e.getMessage() + "\n");
-            return runCommand(prevState);
+            return runCommand(() -> "Bad Command");
         }
     }
 
@@ -69,7 +71,7 @@ public class ConsoleGameHandler extends GameHandler {
 
     @Override
     public void finale(GameState state) {
-        System.out.println("\n" + state.getMessage());
+        System.out.println(state.getMessage());
     }
 
     public void displayBoard() {

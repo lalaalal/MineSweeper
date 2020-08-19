@@ -8,17 +8,17 @@ public class CommandManager {
     private final Stack<UndoableCommand> history = new Stack<>();
 
     public GameState execute(GameCommand command) throws Exception {
+        GameState state = command.run();
         if (command instanceof UndoableCommand)
             history.push((UndoableCommand) command);
-
-        return command.run();
+        
+        return state;
     }
 
     public GameState undo() throws Exception {
-        if (!history.isEmpty()) {
-            UndoableCommand command = history.pop();
-            return command.undo();
-        }
-        throw new Exception("Nothing to undo");
+        if (history.isEmpty())
+            throw new Exception("Nothing to undo");
+        UndoableCommand command = history.pop();
+        return command.undo();
     }
 }
