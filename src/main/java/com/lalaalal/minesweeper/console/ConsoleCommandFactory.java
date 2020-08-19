@@ -14,9 +14,10 @@ public class ConsoleCommandFactory {
         return switch (command) {
             case "OPEN", "open", "o" -> new ConsoleOpenCommand(game);
             case "FLAG", "flag", "f" -> new ConsoleFlagCommand(game);
-            case "EXIT", "exit" -> new ExitCommand();
+            case "EXIT", "exit", "x" -> new ExitCommand();
             case "HELP", "help", "h" -> new ConsoleHelpCommand();
-            case "UNDO", "undo" -> new ConsoleUndoCommand(game);
+            case "UNDO", "undo", "u" -> new ConsoleUndoCommand(game);
+            case "REDO", "redo", "r" -> new ConsoleRedoCommand(game);
             default -> throw new IllegalStateException("Unexpected command: " + command);
         };
     }

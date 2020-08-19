@@ -18,7 +18,7 @@ public class FlagCommand extends UndoableCommand {
     }
 
     @Override
-    public GameState run() {
+    public GameState run() throws Exception {
         point = game.getSelectedPoint();
         game.flagTile(point);
 
@@ -30,5 +30,10 @@ public class FlagCommand extends UndoableCommand {
         game.flagTile(point);
 
         return new PlayingState(point);
+    }
+
+    @Override
+    public GameState redo() {
+        return undo();
     }
 }
