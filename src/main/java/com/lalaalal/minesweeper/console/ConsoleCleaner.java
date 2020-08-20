@@ -1,7 +1,7 @@
 package com.lalaalal.minesweeper.console;
 
 public abstract class ConsoleCleaner {
-    public static ConsoleCleaner getConsoleCleaner() {
+    public static ConsoleCleaner createConsoleCleaner() {
         String os = System.getProperty("os.name");
         if (os.contains("Windows"))
             return new WindowsConsoleCleaner();

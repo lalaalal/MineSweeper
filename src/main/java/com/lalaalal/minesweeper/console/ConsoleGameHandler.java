@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class ConsoleGameHandler extends GameHandler {
     private static final Scanner scanner = new Scanner(System.in);
-    private static final ConsoleCleaner consoleCleaner = ConsoleCleaner.getConsoleCleaner();
+    private static final ConsoleCleaner consoleCleaner = ConsoleCleaner.createConsoleCleaner();
     private final ConsoleCommandFactory commandFactory = new ConsoleCommandFactory(this);
 
     public ConsoleGameHandler() throws Exception{
@@ -37,18 +37,17 @@ public class ConsoleGameHandler extends GameHandler {
         return commandFactory.createCommand(command);
     }
 
-
     @Override
-    public GameState runCommand(GameState prevState) {
+    public GameState process(GameState prevState) {
         try {
             System.out.println("Prev : " + prevState.getMessage());
             GameCommand command = getCommand();
-            return commandManager.execute(command);
+            return executeCommand(command);
         } catch (Exception e) {
             if (!(e instanceof IndexOutOfBoundsException))
                 scanner.nextLine();
             System.out.println(e.getMessage() + "\n");
-            return runCommand(() -> "Bad Command");
+            return process(() -> "Bad Command");
         }
     }
 
