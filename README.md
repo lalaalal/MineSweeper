@@ -1,3 +1,3 @@
 # MineSweeper
 
-MineSweeper in Console
+MineSweeper in Consoletest
