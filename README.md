@@ -1,5 +1,5 @@
 # MineSweeper
 
-MineSweeper in Console
+MineSweeper in Console test
 
 대박대박
